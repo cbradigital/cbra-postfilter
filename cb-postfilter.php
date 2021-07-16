@@ -89,7 +89,7 @@ add_action('init', 'cb_postfilter_init');
 
 /* CSS-Einbindung */
 function cb_postfilter_scripts() {
-  wp_enqueue_script('cb-postfilter-css', get_stylesheet_directory_uri() . '/cb-iulia/cbra-postfilter-main/includes/css/postfilter.css');
+  wp_enqueue_styles('cb-postfilter-css', get_stylesheet_directory_uri() . '/cb-iulia/cbra-postfilter-main/includes/css/postfilter.css');
 }
 add_action('wp_enqueue_scripts', 'cb_postfilter_scripts');
 ?>
