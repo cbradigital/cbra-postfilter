@@ -7,22 +7,23 @@ function cb_postfilter_init() {
 	function cb_render_postfilter($atts) {
 		// Shortcode-Attribute
 		$args = shortcode_atts(array(
-			'categories'	=> '',
+			'category'	=> '',
 		), $atts);
 
 		if(!isset($args['categories'])) {
-			return __('Bitte Kategorien festlegen! (Format: [categories="x, y, z"])', 'cb-he-child');
+			return __('Bitte Kategorie festlegen! (Format: [category="Kategorie-ID"])', 'cb-he-child');
 		}
 
-		// stelle Liste von Tags zusammen; einmal als String und einmal als Array
-		$filter = $args['categories'];
-		$filterArray = explode(',', str_replace(' ', '', $filter));
+		// Kategorie-ID speichern und Child-Kategorien in Array speichern
+		$filter = $args['category'];
+		$filterArray = get_term_children($filter, 'categories');
 
 		/* stelle Array mit Post-Objekten zusammen */
 		$query = new WP_Query([
 			'ignore_sticky_posts' 	=> 0,
 			'numberposts' 			=> -1,
-			'cat' 					=> $filter
+			'cat' 					=> $filter,
+			'fields'				=> 'ids',
 		]);
 		$posts = $query->posts;
 
@@ -45,32 +46,32 @@ function cb_postfilter_init() {
 		$output .= '<div class="cb-postfilter-gallery">';
 		foreach($posts as $post) {
 
-			$cats = wp_get_post_categories($post->ID);		// erstelle für jeden Post eine Liste mit Kategorie-IDs
+			$cats = wp_get_post_categories($post);									// erstelle für jeden Post eine Liste mit Kategorie-IDs
 			$output .= '<div class="cb-postfilter-gallery-card';
-			foreach($cats as $cat) {						// füge jede Kategorie als Klasse hinzu
+			foreach($cats as $cat) {												// füge jede Kategorie als Klasse hinzu
 				$output .= ' ' . $cat;
 			}
-			if($madeSticky == false) { // setzt ersten Post auf Sticky
+			if($madeSticky == false) { 												// setzt ersten Post auf Sticky
 				$output .= ' cb-postfilter-sticky';
 				$madeSticky = true;
 			}
 			$output .= '">';
 
 
-			// Inhalt Post-Kachel
-      $output .= '<a href="' . get_permalink($post->ID) . '">';
-      if(get_the_post_thumbnail_url($post->ID)) {
-        $output .= '<img src="' . get_the_post_thumbnail_url($post->ID) . '">';
-      }
-      else {
-        $output .= '<img src="/wp-content/uploads/2021/05/thumbnail-test.png">'; // <- Platzhalter-IMG
-      }
-      $output .= '<div class="cb-postfilter-blog-text">'
-        . '<p class="cb-postfilter-blog-date">' . get_the_date('d. F Y', $post->ID) . '</p>'
-        . '<span class="cb-postfilter-blog-divider"></span>'
-        . '<h3 class="cb-postfilter-blog-title">' . $post->post_title . '</h3>'
-      . '</div>';
-      $output .= '</a>';
+			  // Inhalt Post-Kachel
+		      $output .= '<a href="' . get_permalink($post) . '">';
+		      if(get_the_post_thumbnail_url($post-)) {
+		        $output .= '<img src="' . get_the_post_thumbnail_url($post) . '">';
+		      }
+		      else {
+		        $output .= '<img src="/wp-content/uploads/2021/05/thumbnail-test.png">'; // <- Platzhalter-IMG
+		      }
+		      $output .= '<div class="cb-postfilter-blog-text">'
+		        . '<p class="cb-postfilter-blog-date">' . get_the_date('d. F Y', $post) . '</p>'
+		        . '<span class="cb-postfilter-blog-divider"></span>'
+		        . '<h3 class="cb-postfilter-blog-title">' . get_the_title($post) . '</h3>'
+		      . '</div>';
+		      $output .= '</a>';
 
 			// Ende Inhalt Post-Kachel
 			$output .= '</div>';
