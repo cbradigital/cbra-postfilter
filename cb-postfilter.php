@@ -15,17 +15,22 @@ function cb_postfilter_init() {
 		}
 
 		// Kategorie-ID speichern und Child-Kategorien in Array speichern
-		$filter = $args['category'];
-		$filterArray = get_term_children($filter, 'categories');
+		$mainCat = $args['category'];
+		$childCats = get_categories(array(
+				'parent'				=> $mainCat,
+				'hide_empty'		=>	false, // nur zum Testen
+				'fields'				=> 'ids',
+		));
 
-		/* stelle Array mit Post-Objekten zusammen */
+		/* stelle Array mit Beiträgen zusammen */
 		$query = new WP_Query([
 			'ignore_sticky_posts' 	=> 0,
-			'numberposts' 			=> -1,
-			'cat' 					=> $filter,
-			'fields'				=> 'ids',
+			'numberposts' 					=> -1,
+			'category__in' 					=> $childCats,
+			'fields'								=> 'ids',
 		]);
 		$posts = $query->posts;
+		wp_reset_query();
 
 		$output = '<div class="cb-postfilter-wrapper">';
 
@@ -34,9 +39,9 @@ function cb_postfilter_init() {
 			. '<button class="cb-postfilter-btn cb-postfilter-btn-all cb-postfilter-btn-active" onclick="filterSelection(`all`)">' . __('Alle', 'cb-he-child') . '</button>';
 
 		// erstelle Button mit Namen für alle ausgewählten Kategorien
-		foreach ($filterArray as $filterID) {
-			$catName = get_cat_name($filterID);
-			$output .= '<button class="cb-postfilter-btn cb-postfilter-btn-' . $filterID . '" onclick="filterSelection(`' . $filterID . '`)">' . $catName . '</button>';
+		foreach ($childCats as $cat) {
+			$catName = get_cat_name($cat);
+			$output .= '<button class="cb-postfilter-btn cb-postfilter-btn-' . $cat . '" onclick="filterSelection(`' . $cat . '`)">' . $catName . '</button>';
 		}
 
 		$output .= '</div>';
@@ -60,11 +65,11 @@ function cb_postfilter_init() {
 
 			  // Inhalt Post-Kachel
 		      $output .= '<a href="' . get_permalink($post) . '">';
-		      if(get_the_post_thumbnail_url($post-)) {
+		      if(get_the_post_thumbnail_url($post)) {
 		        $output .= '<img src="' . get_the_post_thumbnail_url($post) . '">';
 		      }
 		      else {
-		        $output .= '<img src="/wp-content/uploads/2021/05/thumbnail-test.png">'; // <- Platzhalter-IMG
+		        $output .= '<img>'; // <- Platzhalter-IMG
 		      }
 		      $output .= '<div class="cb-postfilter-blog-text">'
 		        . '<p class="cb-postfilter-blog-date">' . get_the_date('d. F Y', $post) . '</p>'
