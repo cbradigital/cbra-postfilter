@@ -10,7 +10,7 @@ function cb_postfilter_init() {
 			'category'	=> '',
 		), $atts);
 
-		if(!isset($args['categories'])) {
+		if(!isset($args['category'])) {
 			return __('Bitte Kategorie festlegen! (Format: [category="Kategorie-ID"])', 'cb-he-child');
 		}
 
