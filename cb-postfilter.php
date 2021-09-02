@@ -1,5 +1,6 @@
 <?php
 /* CBRA-POSTFILTER */
+/* Test-Kommentar */
 
 add_shortcode('cb_postfilter', 'cb_render_postfilter');
 function cb_postfilter_init() {
